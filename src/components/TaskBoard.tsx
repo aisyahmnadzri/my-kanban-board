@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import type { Task } from "../types";
-import AddTaskForm from "./AddTaskForm";
+// import AddTaskForm from "./AddTaskForm";
 
 const TaskBoard: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   // 🔹 Add a new task (form provides everything except id)
-  const handleAddTask = (task: Omit<Task, "id">) => {
-    const newTask: Task = {
-      ...task,
-      id: Date.now().toString(), // generate unique id
-    };
-    setTasks([...tasks, newTask]);
-  };
+  // const handleAddTask = (task: Omit<Task, "id">) => {
+  //   const newTask: Task = {
+  //     ...task,
+  //     id: Date.now().toString(), // generate unique id
+  //   };
+  //   setTasks([...tasks, newTask]);
+  // };
 
   // 🔹 Move a task to a new category
   const moveTask = (taskId: string, newCategory: Task["category"]) => {
@@ -30,7 +30,7 @@ const TaskBoard: React.FC = () => {
 
   return (
     <div>
-      <AddTaskForm addTask={handleAddTask} />
+      {/* <AddTaskForm addTask={handleAddTask} /> */}
 
       <div style={{ display: "flex", gap: "1rem" }}>
         {["Pending", "In Progress", "On Hold", "Review", "Completed"].map(
