@@ -1,24 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Task } from "../types";
-// import AddTaskForm from "./AddTaskForm";
 
 const TaskBoard: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-
-  // 🔹 Add a new task (form provides everything except id)
-  // const handleAddTask = (task: Omit<Task, "id">) => {
-  //   const newTask: Task = {
-  //     ...task,
-  //     id: Date.now().toString(), // generate unique id
-  //   };
-  //   setTasks([...tasks, newTask]);
-  // };
 
   // 🔹 Move a task to a new category
   const moveTask = (taskId: string, category: Task["category"]) => {
     setTasks(
       tasks.map((t) =>
-        t.id === taskId ? { ...t, category: category } : t
+        t.id === taskId ? { ...t, category } : t
       )
     );
   };
@@ -30,12 +20,13 @@ const TaskBoard: React.FC = () => {
 
   return (
     <div>
-      {/* <AddTaskForm addTask={handleAddTask} /> */}
-
       <div style={{ display: "flex", gap: "1rem" }}>
         {["Pending", "In Progress", "On Hold", "Review", "Completed"].map(
           (cat) => (
-            <div key={cat} style={{ flex: 1, border: "1px solid #ddd", padding: "1rem" }}>
+            <div
+              key={cat}
+              style={{ flex: 1, border: "1px solid #ddd", padding: "1rem" }}
+            >
               <h3>{cat}</h3>
               {tasks
                 .filter((t) => t.category === cat)
@@ -69,4 +60,3 @@ const TaskBoard: React.FC = () => {
 };
 
 export default TaskBoard;
-

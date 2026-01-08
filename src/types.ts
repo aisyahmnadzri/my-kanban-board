@@ -1,18 +1,23 @@
+export type TaskCategory =
+  | "Pending"
+  | "In Progress"
+  | "On Hold"
+  | "Review"
+  | "Completed";
+
 export interface Task {
   id: string;
   title: string;
-  category: "Pending" | "In Progress" | "On Hold" | "Review" | "Completed";
+  category: TaskCategory;
   deadline: string; // ISO date string
   note?: string;    // optional comment
-  url?: string;     // optional link
+  url?: string;
 }
 
-export interface Project {
-  id: string;
-  name: string;
-  startDate: string; // ISO date string
-  endDate: string;   // ISO date string
-  tasks: Task[];
-}
-
+export interface Project { 
+  id: string; 
+  name: string; 
+  startDate: string; 
+  endDate: string; 
+  tasks: Task[]; }
 

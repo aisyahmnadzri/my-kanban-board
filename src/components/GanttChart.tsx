@@ -47,5 +47,3 @@ const GanttChart = ({ tasks }: Props) => {
 };
 
 export default GanttChart;
-
-22
