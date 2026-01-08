@@ -5,14 +5,6 @@ interface Props {
   addTask: (task: Omit<Task, "id">) => void;
 }
 
-const categories: Task["category"][] = [
-  "Pending",
-  "In Progress",
-  "On Hold",
-  "Review",
-  "Completed",
-];
-
 const AddTaskForm = ({ addTask }: Props) => {
   const [title, setTitle] = useState("");
   const [deadline, setDeadline] = useState("");
