@@ -15,10 +15,10 @@ const TaskBoard: React.FC = () => {
   // };
 
   // 🔹 Move a task to a new category
-  const moveTask = (taskId: string, newCategory: Task["category"]) => {
+  const moveTask = (taskId: string, category: Task["category"]) => {
     setTasks(
       tasks.map((t) =>
-        t.id === taskId ? { ...t, category: newCategory } : t
+        t.id === taskId ? { ...t, category: category } : t
       )
     );
   };
