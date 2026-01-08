@@ -19,21 +19,20 @@ const AddTaskForm = ({ addTask }: Props) => {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr auto", gap: "0.5rem" }}>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Task title"
-      />
-      <input
-        type="date"
-        value={deadline}
-        onChange={(e) => setDeadline(e.target.value)}
-      />
-      <button onClick={handleAdd}>Add Task</button>
-    </div>
+    <form className="form-card" onSubmit={(e) => { e.preventDefault(); handleAdd(); }}>
+      <label>
+        Task Name
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter task name" />
+      </label>
+      <label>
+        Deadline
+        <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+      </label>
+      <button type="submit">➕ Add Task</button>
+    </form>
   );
 };
 
 export default AddTaskForm;
+
 

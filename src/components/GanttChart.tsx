@@ -13,7 +13,6 @@ interface Props {
 }
 
 const GanttChart = ({ tasks }: Props) => {
-  // Convert tasks into chart data
   const data = tasks.map((t) => ({
     name: t.title,
     deadline: new Date(t.deadline).getTime(),
@@ -21,25 +20,21 @@ const GanttChart = ({ tasks }: Props) => {
   }));
 
   return (
-    <div style={{ marginTop: "2rem" }}>
-      <h2>📅 Timeline (Gantt Chart)</h2>
+    <div className="gantt-chart">
+      <h2>📅 Timeline</h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} layout="vertical">
           <XAxis
             type="number"
             domain={["auto", "auto"]}
-            tickFormatter={(unixTime) =>
-              new Date(unixTime).toLocaleDateString()
-            }
+            tickFormatter={(unixTime) => new Date(unixTime).toLocaleDateString()}
           />
           <YAxis dataKey="name" type="category" width={150} />
           <Tooltip
             labelFormatter={(label) => `Task: ${label}`}
-            formatter={(value) =>
-              new Date(Number(value)).toLocaleDateString()
-            }
+            formatter={(value) => new Date(Number(value)).toLocaleDateString()}
           />
-          <Bar dataKey="deadline" fill="#8884d8" />
+          <Bar dataKey="deadline" fill="#4f46e5" />
         </BarChart>
       </ResponsiveContainer>
     </div>

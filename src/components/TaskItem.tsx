@@ -8,13 +8,7 @@ interface Props {
   removeTask: (taskId: string) => void;
 }
 
-const categories: Task["category"][] = [
-  "Pending",
-  "In Progress",
-  "On Hold",
-  "Review",
-  "Completed",
-];
+const categories: Task["category"][] = ["Pending","In Progress","On Hold","Review","Completed"];
 
 const TaskItem = ({ task, moveTask, updateTask, removeTask }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -27,85 +21,35 @@ const TaskItem = ({ task, moveTask, updateTask, removeTask }: Props) => {
   };
 
   return (
-    <div
-      style={{
-        marginBottom: "0.75rem",
-        padding: "0.75rem",
-        border: "1px solid #bbb",
-        borderRadius: "6px",
-        background: "#fff",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-      }}
-    >
-      {/* Task title + deadline */}
-      <div style={{ fontWeight: 600, fontSize: "1rem" }}>{task.title}</div>
-      <div style={{ fontSize: "0.85rem", color: "#555" }}>
-        Deadline: {task.deadline}
+    <div className="task-card">
+      <div className="task-header">
+        <strong>{task.title}</strong>
+        <span className="deadline">📅 {new Date(task.deadline).toLocaleDateString()}</span>
       </div>
 
-      {/* Notes + URL */}
       {!isEditing ? (
         <>
-          {task.note && (
-            <div style={{ marginTop: "0.25rem", fontSize: "0.9rem" }}>
-              📝 {task.note}
-            </div>
-          )}
-          {task.url && (
-            <div style={{ marginTop: "0.25rem", fontSize: "0.9rem" }}>
-              🔗{" "}
-              <a href={task.url} target="_blank" rel="noreferrer">
-                {task.url}
-              </a>
-            </div>
-          )}
+          {task.note && <p className="note">📝 {task.note}</p>}
+          {task.url && <p className="link">🔗 <a href={task.url} target="_blank" rel="noreferrer">{task.url}</a></p>}
         </>
       ) : (
-        <div style={{ marginTop: "0.5rem" }}>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Add a note/comment"
-            rows={3}
-            style={{ width: "100%", marginBottom: "0.5rem" }}
-          />
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Optional URL"
-            style={{ width: "100%", marginBottom: "0.5rem" }}
-          />
-          <button onClick={saveChanges} style={{ marginRight: "0.5rem" }}>
-            Save
-          </button>
+        <div className="edit-section">
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note" />
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Optional URL" />
+          <button onClick={saveChanges}>💾 Save</button>
           <button onClick={() => setIsEditing(false)}>Cancel</button>
         </div>
       )}
 
-      {/* Action buttons */}
-      <div
-        style={{
-          marginTop: "0.5rem",
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.5rem",
-        }}
-      >
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => moveTask(task.id, cat)}
-            style={{ fontSize: "0.8rem" }}
-          >
-            Move to {cat}
-          </button>
-        ))}
+      <div className="task-actions">
+        <select onChange={(e) => moveTask(task.id, e.target.value as Task["category"])} value={task.category}>
+          {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+        </select>
         <button onClick={() => setIsEditing(true)}>✏️ Edit</button>
-        <button onClick={() => removeTask(task.id)}>❌ Delete</button>
+        <button onClick={() => removeTask(task.id)}>🗑 Remove</button>
       </div>
     </div>
   );
 };
 
 export default TaskItem;
-

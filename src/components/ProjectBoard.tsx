@@ -1,5 +1,6 @@
 import type { Project, Task } from "../types";
-import TaskColumn from "./TaskColumn";
+import { DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import type{ DropResult } from "react-beautiful-dnd";
 import AddTaskForm from "./AddTaskForm";
 import GanttChart from "./GanttChart";
 
@@ -17,63 +18,99 @@ const categories: Task["category"][] = [
 ];
 
 const ProjectBoard = ({ project, updateProjectTasks }: Props) => {
+  // Handle drag end
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+
+    // Ignore if dropped in same place
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    // Update task category based on destination column
+    updateProjectTasks(
+      project.tasks.map((t) =>
+        t.id === draggableId
+          ? { ...t, category: destination.droppableId as Task["category"] }
+          : t
+      )
+    );
+  };
+
+  // Add new task
   const addTask = (task: Omit<Task, "id">) => {
     const newTask: Task = { id: crypto.randomUUID(), ...task };
     updateProjectTasks([...project.tasks, newTask]);
   };
 
-  const moveTask = (taskId: string, newCategory: Task["category"]) => {
-    const updated = project.tasks.map((t) =>
-      t.id === taskId ? { ...t, category: newCategory } : t
-    );
-    updateProjectTasks(updated);
-  };
-
-  const updateTask = (taskId: string, patch: Partial<Task>) => {
-    const updated = project.tasks.map((t) =>
-      t.id === taskId ? { ...t, ...patch } : t
-    );
-    updateProjectTasks(updated);
-  };
-
-  const removeTask = (taskId: string) => {
-    const updated = project.tasks.filter((t) => t.id !== taskId);
-    updateProjectTasks(updated);
-  };
-
   return (
-    <div>
-      <div
-        style={{
-          marginBottom: "1rem",
-          padding: "0.75rem",
-          border: "1px solid #eee",
-          borderRadius: "8px",
-          background: "#fafafa",
-        }}
-      >
-        <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>
-          {project.name} — {project.startDate} → {project.endDate}
-        </div>
-        <AddTaskForm addTask={addTask} />
-      </div>
+    <div className="project-board">
+      <header className="project-header">
+        <h2>{project.name}</h2>
+        <span className="project-dates">
+          {new Date(project.startDate).toLocaleDateString()} →{" "}
+          {new Date(project.endDate).toLocaleDateString()}
+        </span>
+      </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1rem" }}>
-        {categories.map((cat) => (
-          <TaskColumn
-            key={cat}
-            title={cat}
-            tasks={project.tasks}
-            moveTask={moveTask}
-            updateTask={updateTask}
-            removeTask={removeTask}
-          />
-        ))}
-      </div>
+      <AddTaskForm addTask={addTask} />
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="columns-grid">
+          {categories.map((cat) => (
+            <Droppable droppableId={cat} key={cat}>
+              {(provided, snapshot) => (
+                <div
+                  className={`column-card ${
+                    snapshot.isDraggingOver ? "dragging-over" : ""
+                  }`}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  <h3>
+                    {cat} (
+                    {project.tasks.filter((t) => t.category === cat).length})
+                  </h3>
+
+                  {project.tasks
+                    .filter((t) => t.category === cat)
+                    .map((task, index) => (
+                      <Draggable
+                        draggableId={task.id}
+                        index={index}
+                        key={task.id}
+                      >
+                        {(provided) => (
+                          <div
+                            className="task-card"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <strong>{task.title}</strong>
+                            <div className="deadline">
+                              📅{" "}
+                              {new Date(task.deadline).toLocaleDateString()}
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
+
       <GanttChart tasks={project.tasks} />
     </div>
   );
 };
 
 export default ProjectBoard;
-

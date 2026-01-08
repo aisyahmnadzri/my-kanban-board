@@ -17,6 +17,7 @@ const ProjectSelector = ({
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const handleAdd = () => {
     if (!name || !startDate || !endDate) return;
@@ -24,27 +25,18 @@ const ProjectSelector = ({
     setName("");
     setStartDate("");
     setEndDate("");
+    setShowModal(false); // close modal after adding
   };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "1rem",
-        marginBottom: "1.5rem",
-      }}
-    >
+    <div className="project-selector">
       <div>
-        <label style={{ display: "block", marginBottom: "0.5rem" }}>
-          Select project
-        </label>
+        <label>Choose Project</label>
         <select
           value={activeProjectId || ""}
           onChange={(e) => setActiveProjectId(e.target.value || null)}
-          style={{ width: "100%", padding: "0.5rem" }}
         >
-          <option value="">—</option>
+          <option value="">— Select —</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -53,43 +45,40 @@ const ProjectSelector = ({
         </select>
       </div>
 
-      <div
-        style={{
-          border: "1px solid #ddd",
-          padding: "0.75rem",
-          borderRadius: "8px",
-        }}
-      >
-        <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
-          Add new project
+      {/* Add Project Button */}
+      <button className="add-project-btn" onClick={() => setShowModal(true)}>
+        ➕ Add New Project
+      </button>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h3>Create New Project</h3>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Project name"
+            />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            <div className="modal-actions">
+              <button onClick={handleAdd}>Save</button>
+              <button onClick={() => setShowModal(false)}>Cancel</button>
+            </div>
+          </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Project name"
-          />
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-        <button
-          onClick={handleAdd}
-          style={{ marginTop: "0.5rem", padding: "0.5rem 0.75rem" }}
-        >
-          Add Project
-        </button>
-      </div>
+      )}
     </div>
   );
 };
 
 export default ProjectSelector;
-
