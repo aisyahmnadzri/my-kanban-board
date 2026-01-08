@@ -1,52 +1,69 @@
-import { useState } from "react";
-import TaskColumn from "./TaskColumn";
+import React, { useState } from "react";
+import type { Task } from "../types";
 import AddTaskForm from "./AddTaskForm";
 
-export interface Task {
-  title: string;
-  category: "Pending" | "In Progress" | "On Hold" | "Review" | "Completed";
-  deadline: string;
-  note?: string;
-  url?: string;
-}
-
-const TaskBoard = () => {
+const TaskBoard: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const addTask = (task: Task) => {
-    setTasks([...tasks, task]);
-  };
-  const moveTask = (index: number, newCategory: Task["category"]) => {
-    const updated = [...tasks];
-    updated[index].category = newCategory;
-    setTasks(updated);
+  // 🔹 Add a new task (form provides everything except id)
+  const handleAddTask = (task: Omit<Task, "id">) => {
+    const newTask: Task = {
+      ...task,
+      id: Date.now().toString(), // generate unique id
+    };
+    setTasks([...tasks, newTask]);
   };
 
-  const removeTask = (index: number) => {
-    setTasks(tasks.filter((_, i) => i !== index));
+  // 🔹 Move a task to a new category
+  const moveTask = (taskId: string, newCategory: Task["category"]) => {
+    setTasks(
+      tasks.map((t) =>
+        t.id === taskId ? { ...t, category: newCategory } : t
+      )
+    );
+  };
+
+  // 🔹 Delete a task
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks.filter((t) => t.id !== taskId));
   };
 
   return (
-    <div style={{ display: "flex", gap: "1rem" }}>
-      <AddTaskForm addTask={addTask} />
-      <TaskColumn
-        title="Pending"
-        tasks={tasks}
-        moveTask={moveTask}
-        removeTask={removeTask}
-      />
-      <TaskColumn
-      title="In Progress"
-        tasks={tasks}
-        moveTask={moveTask}
-        removeTask={removeTask}
-      />
-      <TaskColumn
-        title="Completed"
-        tasks={tasks}
-        moveTask={moveTask}
-        removeTask={removeTask}
-      />
+    <div>
+      <AddTaskForm addTask={handleAddTask} />
+
+      <div style={{ display: "flex", gap: "1rem" }}>
+        {["Pending", "In Progress", "On Hold", "Review", "Completed"].map(
+          (cat) => (
+            <div key={cat} style={{ flex: 1, border: "1px solid #ddd", padding: "1rem" }}>
+              <h3>{cat}</h3>
+              {tasks
+                .filter((t) => t.category === cat)
+                .map((t) => (
+                  <div
+                    key={t.id}
+                    style={{
+                      background: "#fff",
+                      marginBottom: "0.5rem",
+                      padding: "0.5rem",
+                      borderRadius: "6px",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <div>{t.title}</div>
+                    <div style={{ fontSize: "0.8rem", color: "#666" }}>
+                      Deadline: {t.deadline}
+                    </div>
+                    <button onClick={() => deleteTask(t.id)}>Delete</button>
+                    <button onClick={() => moveTask(t.id, "Completed")}>
+                      Mark Completed
+                    </button>
+                  </div>
+                ))}
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };
